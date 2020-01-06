@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ClassicRaiderClient_Tab.Pages.Home"
+﻿<UserControl x:Class="ClassicRaiderClient_Tab.Pages.Configuration"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,10 @@
     <Grid Style="{StaticResource ContentRoot}">
         <ScrollViewer>
             <StackPanel MinWidth="200">
-                <TextBlock Text="TODO: add content" />
+                <TextBlock Text="Please select your ClassicRaiderProfile.lua in your AddOn folder." />
+                <Button x:Name="select_file" Margin="0,15" Content="Select File"></Button>
+                <TextBlock x:Name="selected_file_path" Text="No file has been selected." />
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

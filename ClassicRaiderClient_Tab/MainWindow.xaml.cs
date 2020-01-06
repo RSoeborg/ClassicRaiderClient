@@ -21,9 +21,27 @@ namespace ClassicRaiderClient_Tab
     /// </summary>
     public partial class MainWindow : ModernWindow
     {
+        private bool UploadTabAdded = false;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            if (string.IsNullOrWhiteSpace(Properties.Settings.Default.Path))
+            {
+                MenuLinkGroups.Remove(uploadtab);
+            } else
+            {
+                UploadTabAdded = true;
+            }
+        }
+
+        public void AddUploadTab() {
+            if (!UploadTabAdded)
+            {
+                MenuLinkGroups.Add(uploadtab);
+                UploadTabAdded = true;
+            }
         }
     }
 }
