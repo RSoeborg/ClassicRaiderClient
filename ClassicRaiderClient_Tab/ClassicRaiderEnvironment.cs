@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,14 +16,43 @@ namespace ClassicRaiderClient_Tab
 {
     public class ClassicRaiderEnvironment
     {
+        FileInfo lastUploadedFile;
+
+        public ClassicRaiderEnvironment()
+        {
+            new Thread(() => // Catch wow closing.
+            {
+                while (true)
+                {
+                    var WowProcess = Process.GetProcessesByName("WowClassic").FirstOrDefault();
+                    if (WowProcess != null)
+                    {
+                        WowProcess.WaitForExit();
+
+                        if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.Path))
+                        {
+                            // wait for file to be uploaded.
+                            while ((new FileInfo(Properties.Settings.Default.Path).LastWriteTime != lastUploadedFile.LastWriteTime))
+                            {
+                                Thread.Sleep(50);//wait 50ms to recheck if file has been uploaded..
+                            }
+
+                            // delete file.
+                            using (var sw = new StreamWriter(Properties.Settings.Default.Path))
+                            {
+                                sw.Write("ClassicRaiderProfilePrefs = nil\naldb = {}\nscanningEnabled = true");
+                            }
+                            File.Delete(Properties.Settings.Default.Path + ".bak");
+                        }
+                    }
+                    Thread.Sleep(1000);
+                }
+            }).Start();
+        }
+
         FileSystemWatcher watcher = new FileSystemWatcher();
         public bool AllowHandling { get; set; } = false;
 
-        private string GetFolderPath()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ClassicRaiderClient");
-
-        }
 
         public void Setup(string name)
         {
@@ -75,14 +105,17 @@ namespace ClassicRaiderClient_Tab
         {
             if (AllowHandling == true)
             {
-                new Thread(() =>
+                var thread = new Thread(() =>
                 {
                     NameValueCollection nvc = new NameValueCollection();
                     nvc.Add("id", "file");
                     nvc.Add("class", "upload-input");
-                    HttpUploadFile("https://classicraider.com//UploadData",
+                    HttpUploadFile("https://classicraider.com/UploadData",
                          @e.FullPath, "file", "lua", nvc);
-                }).Start();
+                    lastUploadedFile = new FileInfo(e.FullPath);
+                });
+
+                thread.Start();
             }
             else
             {

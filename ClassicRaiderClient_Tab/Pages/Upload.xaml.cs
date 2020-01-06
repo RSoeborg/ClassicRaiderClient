@@ -30,6 +30,11 @@ namespace ClassicRaiderClient_Tab.Pages
         {
             InitializeComponent();
 
+            if (Properties.Settings.Default.Uploading)
+            {
+                BeginUpload();   
+            }
+
             start_upload.Click += (s, e) => 
             {
                 if (Properties.Settings.Default.Uploading) {
@@ -42,28 +47,34 @@ namespace ClassicRaiderClient_Tab.Pages
                 }
                 else
                 {
-                    GlobalVariables.Environment.AllowHandling = true;
-                    Properties.Settings.Default.Uploading = true;
-                    Properties.Settings.Default.Save();
-                    Properties.Settings.Default.Reload();
-                    SetUploadVisuals(UploadVisuals.Uploading);
+                    BeginUpload(); 
                 }
             };
         }
-        
+
+        private void BeginUpload()
+        {
+            GlobalVariables.Environment.AllowHandling = true;
+            GlobalVariables.Environment.CreateFileWatcher(Properties.Settings.Default.Path);
+            Properties.Settings.Default.Uploading = true;
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+            SetUploadVisuals(UploadVisuals.Uploading);
+        }
+
         private void SetUploadVisuals(UploadVisuals visuals)
         {
             switch (visuals)
             {
                 case UploadVisuals.Idle:
-                    start_upload.Content = "Start Upload";
-                    uploading_progress.Text = "Click the button below to begin automatically syncronising with Classic Raider.";
+                    start_upload.Content = "Start Synchronisation";
+                    uploading_progress.Text = "Click the button below to begin automatically synchronising with Classic Raider.";
                     progressring.IsActive = false;
                     break;
 
                 case UploadVisuals.Uploading:
-                    start_upload.Content = "Stop Upload";
-                    uploading_progress.Text = "ClassicRaiderProfile is now automatically syncronising. You may close the window.";
+                    start_upload.Content = "Stop Synchronisation";
+                    uploading_progress.Text = "ClassicRaiderProfile is now automatically synchronising. You may close the window.";
                     progressring.IsActive = true;
                     break;
             }

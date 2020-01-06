@@ -12,7 +12,7 @@
                 <mui:ModernProgressRing x:Name="progressring" Grid.Column="2" Margin="0,45" Width="100" Height="100" IsActive="false" Style="{Binding SelectedItem.Tag, ElementName=CmbRingStyle}" />
                 <TextBlock x:Name="uploading_progress" TextAlignment="Center" Text="Click the button below to begin automatically syncronising with Classic Raider." />
 
-                <Button x:Name="start_upload" Content="Start Uploading" MaxWidth="450" Margin="0,15"></Button>
+                <Button x:Name="start_upload" Content="Start Synchronisation" MaxWidth="450" Margin="0,15"></Button>
 
             </StackPanel>
         </ScrollViewer>

@@ -26,6 +26,29 @@ namespace ClassicRaiderClient_Tab
         public MainWindow()
         {
             InitializeComponent();
+            System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+            ni.Icon = new System.Drawing.Icon("LOGO-ICON.ico");
+            ni.Visible = true;
+            ni.DoubleClick +=
+                delegate (object sender, EventArgs args)
+                {
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                };
+
+            ni.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+            ni.ContextMenuStrip.Items.Add("Show", null, (s,e)=> {
+                this.Show();
+            });
+            ni.ContextMenuStrip.Items.Add("Exit", null, (s,e)=> {
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+            });
+
+
+            Closing += (s, e) => {
+                e.Cancel = true;
+                this.Hide();
+            };
 
             if (string.IsNullOrWhiteSpace(Properties.Settings.Default.Path))
             {
